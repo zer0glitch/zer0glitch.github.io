@@ -1,6 +1,6 @@
 ---
 layout: page
-title: zeroGlitch Blog
+title: ''
 tagline: trying to do some cool stuff and share
 ---
 {% include JB/setup %}

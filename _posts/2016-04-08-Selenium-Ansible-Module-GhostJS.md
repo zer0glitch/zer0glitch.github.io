@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Automated Testing with Ansible"
+title: "Using Selenium and Ghostdriver as an Ansible Module"
 description: Utilizing Selenium and PhantomJS as an Ansible Module for configuration or testing
 ---
 
