@@ -349,3 +349,16 @@ end
   - yum: name=postgresql state=installed
   - yum: name=httpd state=installed
 ```
+
+Potential Errors:
+====
+
+```
+An error occurred while executing multiple actions in parallel.
+```
+
+To workaround this issue, bring the boxes with the following command:
+
+```
+vagrant up --no-parallel
+```
