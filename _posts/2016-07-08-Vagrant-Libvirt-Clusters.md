@@ -11,6 +11,7 @@ Initial Setup
 
 * [Installing Ansible](http://docs.ansible.com/ansible/intro_installation.html)
 * [Installing Ansible libvirt/kvm/Ansible](https://galaxy.ansible.com/zer0glitch/vagrant-libvirt/)
+* [Full Example](https://github.com/zer0glitch/vagrant-cluster-example)
 
 
 - Install EPEL Repo
@@ -260,7 +261,7 @@ end
 So we have made our life easier.  We have started with a preconfigured VM, so no waiting for the installation to complete, we have the VMs stood up in the matter of mintunes and now we are ready to provision the machine.  This is an additional power of Vagrant.  We can automaticall provision and configure our machines.  We will be using the ansible provisioner.  To conigure the servers with the roles they need.
 
 
-Sample playbooks can be downloaded from [here]().
+Sample playbooks can be downloaded from [here](https://github.com/zer0glitch/vagrant-cluster-example).
 
 The vagrant file will be modified to do the following things:
 - Add provisioning sections for the servers
@@ -329,6 +330,7 @@ end
 ```
 
 **database.yml**
+
 ```
 ---
 - hosts: database
@@ -338,6 +340,7 @@ end
 ```
 
 **web.yml**
+
 ```
 ---
 - hosts: webservers
