@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Packer QEMU Error"
-description: Build 'XXXX' errored: Failed creating Qemu driver: exec: "qemu-system-x86_64": executable file not found in PATH
+description: working with packer and qemu
 ---
 
 **Issue**
