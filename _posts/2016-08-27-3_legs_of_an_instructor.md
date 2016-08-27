@@ -5,7 +5,7 @@ description: The Meaining of the 3 legs of an instructor
 ---
 
 
-Bettering people's lives through traditional martial arts training.
+***The 3 Legs of an Instructor***
 
 The basic principles of being an instructor have not changed of the years since Soke Hirano set them for all of us to follow.  We must do three things to be an instructor; 1) Train, 2) Teach, and 3) Promote.
 
