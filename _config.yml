@@ -31,8 +31,8 @@ force-https: True
 lang: "en"
 author: "jamie Whetsell"
 title: "{ jamie Whetsell }"
-description: "Blog and website of jamie Whetsell, blogging mainly for tech. Opinions expressed are mine."
-keywords: "smith, jones, personal, jekyll, theme"
+description: "Blog and website of jamie Whetsell,"
+keywords: "whetsell, jones, personal, jekyll, theme"
 favicon: "/img/favicon.ico"
 
 ################
@@ -102,7 +102,7 @@ pinterest-share: True
 pocket-share: True
 vkontakte-share: True
 
-disqus-shortname: "panossakkos"
+disqus-shortname: "zer0glitch"
 
 syntax-highlight: True
 
@@ -126,7 +126,7 @@ timeline-img: "/img/timeline/default.png"
 # Contact #
 ###########
 
-email: "your@email.here"
+email: "jamie@zeroglitch.com"
 
 ################
 # Author Blurb #
@@ -136,7 +136,7 @@ email: "your@email.here"
 # This works best when your author blurb image has a transparent background, or matches your site background color.
 
 # if the author_blurb is not set, then this feature is skipped
-author_blurb: "jamie Whetsell is an awesome person. He lives in Flatland, where he works on two-dimensional engineering projects. In his spare time, jamie likes to eat cotton candy."
+author_blurb: "Jamie Whetsell has had a long career in working government open source projects, and now moving into the public.  In his free time he enjoys training and teaching karate."
 author_blurb_image: "/img/author.png"
 
 ##################
@@ -149,9 +149,7 @@ social:
   - title: "twitter"
     url: "https://twitter.com/"
   - title: "github"
-    url: "https://github.com/PanosSakkos/personal-jekyll-theme"
-  - title: "bitcoin"
-    url: "https://blockchain.info/address/1LHuKC9Em3KA5yoZaf7nngnNdf9K7s2gSi"
+    url: "https://github.com/zer0gltich"
   - title: "rss"
     url: "/feed.xml"
 
@@ -165,7 +163,7 @@ social:
 # GPG on Keybase #
 ##################
 
-keybase-username: johnsmith
+keybase-username: jamiewhetsell
 keybase-in-social: True
 keybase-in-footer: True
 
