@@ -55,7 +55,7 @@ type-speed: 10
 start-delay: 200
 delete-delay: 5000
 lines: # You can add HTML Tags in the Text
-  - text: "My tags is closed, but my source is open."
+  - text: "My tab is closed, but my source is open."
   - text: "Sharing is caring."
   - text: "Failing is always an option"
 
