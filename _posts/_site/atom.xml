@@ -1,0 +1,1137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+ 
+ <title>zer0glitch</title>
+ <link href="http://zer0glitch.github.io/atom.xml" rel="self"/>
+ <link href="http://zer0glitch.github.io"/>
+ <updated>2016-08-08T23:53:04-04:00</updated>
+ <id>http://zer0glitch.github.io</id>
+ <author>
+   <name>James Whetsell</name>
+   <email>glitch@redhat.com</email>
+ </author>
+
+ 
+ <entry>
+   <title>Create an RPM out of an archive using maven</title>
+   <link href="http://zer0glitch.github.io/2016/08/08/Creating-an-RPM-with-maven-and-an-archive"/>
+   <updated>2016-08-08T00:00:00-04:00</updated>
+   <id>http://zer0glitch.github.io/2016/08/08/Creating-an-RPM-with-maven-and-an-archive</id>
+   <content type="html">&lt;p&gt;&lt;strong&gt;&lt;em&gt;Introduction&lt;/em&gt;&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;On Linux based systems, it is best to use a package manager to install, update, and delete software on your system.  This allows for software to be installed in a common way.  User, Groups, Permissions, and location will be consistent across your environment.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Tools&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Maven&lt;/li&gt;
+  &lt;li&gt;maven-rpm-plugin&lt;/li&gt;
+  &lt;li&gt;maven-download-plugin&lt;/li&gt;
+  &lt;li&gt;buildtools&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The sample pom below does all the work.&lt;/p&gt;
+
+&lt;p&gt;If you are building for another project you need to change:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;artifactId&lt;/li&gt;
+  &lt;li&gt;groupId&lt;/li&gt;
+  &lt;li&gt;version&lt;/li&gt;
+  &lt;li&gt;download url&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;By default this will install in /opt.  If you would like to deploy somewhere else change the output location, permissions, group and  username, if you destire.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Sample Pom&lt;/strong&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
+&lt;span class=&quot;cp&quot;&gt;&amp;lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;project&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;xmlns=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;http://maven.apache.org/POM/4.0.0&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;xmlns:xsi=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;http://www.w3.org/2001/XMLSchema-instance&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;xsi:schemaLocation=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;nt&quot;&gt;&amp;lt;modelVersion&amp;gt;&lt;/span&gt;4.0.0&lt;span class=&quot;nt&quot;&gt;&amp;lt;/modelVersion&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;nt&quot;&gt;&amp;lt;groupId&amp;gt;&lt;/span&gt;wildfly&lt;span class=&quot;nt&quot;&gt;&amp;lt;/groupId&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;nt&quot;&gt;&amp;lt;artifactId&amp;gt;&lt;/span&gt;wildfly&lt;span class=&quot;nt&quot;&gt;&amp;lt;/artifactId&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;nt&quot;&gt;&amp;lt;version&amp;gt;&lt;/span&gt;10.1.0.CR1&lt;span class=&quot;nt&quot;&gt;&amp;lt;/version&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;nt&quot;&gt;&amp;lt;packaging&amp;gt;&lt;/span&gt;pom&lt;span class=&quot;nt&quot;&gt;&amp;lt;/packaging&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;nt&quot;&gt;&amp;lt;properties&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;project.build.sourceEncoding&amp;gt;&lt;/span&gt;UTF-8&lt;span class=&quot;nt&quot;&gt;&amp;lt;/project.build.sourceEncoding&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;wildfly.url/&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;nt&quot;&gt;&amp;lt;/properties&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;nt&quot;&gt;&amp;lt;build&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;plugins&amp;gt;&lt;/span&gt;
+      &lt;span class=&quot;nt&quot;&gt;&amp;lt;plugin&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;groupId&amp;gt;&lt;/span&gt;com.googlecode.maven-download-plugin&lt;span class=&quot;nt&quot;&gt;&amp;lt;/groupId&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;artifactId&amp;gt;&lt;/span&gt;download-maven-plugin&lt;span class=&quot;nt&quot;&gt;&amp;lt;/artifactId&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;version&amp;gt;&lt;/span&gt;1.3.0&lt;span class=&quot;nt&quot;&gt;&amp;lt;/version&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;executions&amp;gt;&lt;/span&gt;
+          &lt;span class=&quot;nt&quot;&gt;&amp;lt;execution&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;c&quot;&gt;&amp;lt;!-- the wget goal actually binds itself to this phase by default --&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;phase&amp;gt;&lt;/span&gt;process-resources&lt;span class=&quot;nt&quot;&gt;&amp;lt;/phase&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;goals&amp;gt;&lt;/span&gt;
+              &lt;span class=&quot;nt&quot;&gt;&amp;lt;goal&amp;gt;&lt;/span&gt;wget&lt;span class=&quot;nt&quot;&gt;&amp;lt;/goal&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;/goals&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;configuration&amp;gt;&lt;/span&gt;
+              &lt;span class=&quot;nt&quot;&gt;&amp;lt;url&amp;gt;&lt;/span&gt;http://download.jboss.org/wildfly/10.1.0.CR1/wildfly-10.1.0.CR1.zip&lt;span class=&quot;nt&quot;&gt;&amp;lt;/url&amp;gt;&lt;/span&gt;
+              &lt;span class=&quot;nt&quot;&gt;&amp;lt;outputFileName&amp;gt;&lt;/span&gt;${project.artifactId}-${project.version}.zip&lt;span class=&quot;nt&quot;&gt;&amp;lt;/outputFileName&amp;gt;&lt;/span&gt;
+              &lt;span class=&quot;c&quot;&gt;&amp;lt;!-- default target location, just to demonstrate the parameter --&amp;gt;&lt;/span&gt;
+              &lt;span class=&quot;nt&quot;&gt;&amp;lt;targetDirectory&amp;gt;&lt;/span&gt;${project.build.directory}&lt;span class=&quot;nt&quot;&gt;&amp;lt;/targetDirectory&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;/configuration&amp;gt;&lt;/span&gt;
+          &lt;span class=&quot;nt&quot;&gt;&amp;lt;/execution&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;/executions&amp;gt;&lt;/span&gt;
+      &lt;span class=&quot;nt&quot;&gt;&amp;lt;/plugin&amp;gt;&lt;/span&gt;
+      &lt;span class=&quot;nt&quot;&gt;&amp;lt;plugin&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;groupId&amp;gt;&lt;/span&gt;org.codehaus.mojo&lt;span class=&quot;nt&quot;&gt;&amp;lt;/groupId&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;artifactId&amp;gt;&lt;/span&gt;truezip-maven-plugin&lt;span class=&quot;nt&quot;&gt;&amp;lt;/artifactId&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;version&amp;gt;&lt;/span&gt;1.2&lt;span class=&quot;nt&quot;&gt;&amp;lt;/version&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;executions&amp;gt;&lt;/span&gt;
+          &lt;span class=&quot;nt&quot;&gt;&amp;lt;execution&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;id&amp;gt;&lt;/span&gt;copy-package&lt;span class=&quot;nt&quot;&gt;&amp;lt;/id&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;goals&amp;gt;&lt;/span&gt;
+              &lt;span class=&quot;nt&quot;&gt;&amp;lt;goal&amp;gt;&lt;/span&gt;copy&lt;span class=&quot;nt&quot;&gt;&amp;lt;/goal&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;/goals&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;phase&amp;gt;&lt;/span&gt;process-resources&lt;span class=&quot;nt&quot;&gt;&amp;lt;/phase&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;configuration&amp;gt;&lt;/span&gt;
+              &lt;span class=&quot;nt&quot;&gt;&amp;lt;verbose&amp;gt;&lt;/span&gt;true&lt;span class=&quot;nt&quot;&gt;&amp;lt;/verbose&amp;gt;&lt;/span&gt;
+              &lt;span class=&quot;nt&quot;&gt;&amp;lt;fileset&amp;gt;&lt;/span&gt;
+                &lt;span class=&quot;nt&quot;&gt;&amp;lt;directory&amp;gt;&lt;/span&gt;target/${project.artifactId}-${project.version}.zip&lt;span class=&quot;nt&quot;&gt;&amp;lt;/directory&amp;gt;&lt;/span&gt;
+                &lt;span class=&quot;nt&quot;&gt;&amp;lt;outputDirectory&amp;gt;&lt;/span&gt;target&lt;span class=&quot;nt&quot;&gt;&amp;lt;/outputDirectory&amp;gt;&lt;/span&gt;
+              &lt;span class=&quot;nt&quot;&gt;&amp;lt;/fileset&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;/configuration&amp;gt;&lt;/span&gt;
+          &lt;span class=&quot;nt&quot;&gt;&amp;lt;/execution&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;/executions&amp;gt;&lt;/span&gt;
+      &lt;span class=&quot;nt&quot;&gt;&amp;lt;/plugin&amp;gt;&lt;/span&gt;
+      &lt;span class=&quot;nt&quot;&gt;&amp;lt;plugin&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;groupId&amp;gt;&lt;/span&gt;org.codehaus.mojo&lt;span class=&quot;nt&quot;&gt;&amp;lt;/groupId&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;artifactId&amp;gt;&lt;/span&gt;rpm-maven-plugin&lt;span class=&quot;nt&quot;&gt;&amp;lt;/artifactId&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;executions&amp;gt;&lt;/span&gt;
+          &lt;span class=&quot;nt&quot;&gt;&amp;lt;execution&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;id&amp;gt;&lt;/span&gt;generate-rpm&lt;span class=&quot;nt&quot;&gt;&amp;lt;/id&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;goals&amp;gt;&lt;/span&gt;
+              &lt;span class=&quot;nt&quot;&gt;&amp;lt;goal&amp;gt;&lt;/span&gt;attached-rpm&lt;span class=&quot;nt&quot;&gt;&amp;lt;/goal&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;/goals&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;phase&amp;gt;&lt;/span&gt;package&lt;span class=&quot;nt&quot;&gt;&amp;lt;/phase&amp;gt;&lt;/span&gt;
+          &lt;span class=&quot;nt&quot;&gt;&amp;lt;/execution&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;/executions&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;configuration&amp;gt;&lt;/span&gt;
+          &lt;span class=&quot;nt&quot;&gt;&amp;lt;name&amp;gt;&lt;/span&gt;${project.artifactId}&lt;span class=&quot;nt&quot;&gt;&amp;lt;/name&amp;gt;&lt;/span&gt;
+          &lt;span class=&quot;nt&quot;&gt;&amp;lt;group&amp;gt;&lt;/span&gt;Wildfly/Deps&lt;span class=&quot;nt&quot;&gt;&amp;lt;/group&amp;gt;&lt;/span&gt;
+          &lt;span class=&quot;nt&quot;&gt;&amp;lt;copyright&amp;gt;&lt;/span&gt;GPL, v2&lt;span class=&quot;nt&quot;&gt;&amp;lt;/copyright&amp;gt;&lt;/span&gt;
+          &lt;span class=&quot;nt&quot;&gt;&amp;lt;prefix&amp;gt;&lt;/span&gt;/opt/${project.artifactId}-${project-version}&lt;span class=&quot;nt&quot;&gt;&amp;lt;/prefix&amp;gt;&lt;/span&gt;
+          &lt;span class=&quot;nt&quot;&gt;&amp;lt;needarch&amp;gt;&lt;/span&gt;noarch&lt;span class=&quot;nt&quot;&gt;&amp;lt;/needarch&amp;gt;&lt;/span&gt;
+          &lt;span class=&quot;nt&quot;&gt;&amp;lt;targetOS&amp;gt;&lt;/span&gt;linux&lt;span class=&quot;nt&quot;&gt;&amp;lt;/targetOS&amp;gt;&lt;/span&gt;
+          &lt;span class=&quot;nt&quot;&gt;&amp;lt;defaultDirmode&amp;gt;&lt;/span&gt;755&lt;span class=&quot;nt&quot;&gt;&amp;lt;/defaultDirmode&amp;gt;&lt;/span&gt;
+          &lt;span class=&quot;nt&quot;&gt;&amp;lt;defaultFilemode&amp;gt;&lt;/span&gt;755&lt;span class=&quot;nt&quot;&gt;&amp;lt;/defaultFilemode&amp;gt;&lt;/span&gt;
+          &lt;span class=&quot;nt&quot;&gt;&amp;lt;defaultUsername&amp;gt;&lt;/span&gt;root&lt;span class=&quot;nt&quot;&gt;&amp;lt;/defaultUsername&amp;gt;&lt;/span&gt;
+          &lt;span class=&quot;nt&quot;&gt;&amp;lt;defaultGroupname&amp;gt;&lt;/span&gt;root&lt;span class=&quot;nt&quot;&gt;&amp;lt;/defaultGroupname&amp;gt;&lt;/span&gt;
+          &lt;span class=&quot;nt&quot;&gt;&amp;lt;defineStatements&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;defineStatement&amp;gt;&lt;/span&gt;_unpackaged_files_terminate_build 0&lt;span class=&quot;nt&quot;&gt;&amp;lt;/defineStatement&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;defineStatement&amp;gt;&lt;/span&gt;__jar_repack 0&lt;span class=&quot;nt&quot;&gt;&amp;lt;/defineStatement&amp;gt;&lt;/span&gt;
+          &lt;span class=&quot;nt&quot;&gt;&amp;lt;/defineStatements&amp;gt;&lt;/span&gt;
+          &lt;span class=&quot;nt&quot;&gt;&amp;lt;directoryIncluded&amp;gt;&lt;/span&gt;true&lt;span class=&quot;nt&quot;&gt;&amp;lt;/directoryIncluded&amp;gt;&lt;/span&gt;
+          &lt;span class=&quot;nt&quot;&gt;&amp;lt;mappings&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;mapping&amp;gt;&lt;/span&gt;
+              &lt;span class=&quot;nt&quot;&gt;&amp;lt;directory&amp;gt;&lt;/span&gt;/opt/${project.artifactId}-${project.version}&lt;span class=&quot;nt&quot;&gt;&amp;lt;/directory&amp;gt;&lt;/span&gt;
+              &lt;span class=&quot;nt&quot;&gt;&amp;lt;username&amp;gt;&lt;/span&gt;root&lt;span class=&quot;nt&quot;&gt;&amp;lt;/username&amp;gt;&lt;/span&gt;
+              &lt;span class=&quot;nt&quot;&gt;&amp;lt;groupname&amp;gt;&lt;/span&gt;root&lt;span class=&quot;nt&quot;&gt;&amp;lt;/groupname&amp;gt;&lt;/span&gt;
+              &lt;span class=&quot;nt&quot;&gt;&amp;lt;sources&amp;gt;&lt;/span&gt;
+                &lt;span class=&quot;nt&quot;&gt;&amp;lt;source&amp;gt;&lt;/span&gt;
+                  &lt;span class=&quot;nt&quot;&gt;&amp;lt;location&amp;gt;&lt;/span&gt;target/${project.artifactId}-${project.version}&lt;span class=&quot;nt&quot;&gt;&amp;lt;/location&amp;gt;&lt;/span&gt;
+                &lt;span class=&quot;nt&quot;&gt;&amp;lt;/source&amp;gt;&lt;/span&gt;
+              &lt;span class=&quot;nt&quot;&gt;&amp;lt;/sources&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;/mapping&amp;gt;&lt;/span&gt;
+          &lt;span class=&quot;nt&quot;&gt;&amp;lt;/mappings&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;/configuration&amp;gt;&lt;/span&gt;
+      &lt;span class=&quot;nt&quot;&gt;&amp;lt;/plugin&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/plugins&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;nt&quot;&gt;&amp;lt;/build&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/project&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;&amp;lt;!-- vim: set ts=4 sw=4: --&amp;gt;&lt;/span&gt;
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;Run maven&lt;/strong&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;mvn clean install
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;The output is a wildfly rpm that install in /opt/wildfly-10.1.0.CR1&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>OpenSSL CA, Certificate and Keytool Management with Ansible Part 2</title>
+   <link href="http://zer0glitch.github.io/2016/08/07/CA-Certificate-Keytool-with-Ansible-Part2"/>
+   <updated>2016-08-07T00:00:00-04:00</updated>
+   <id>http://zer0glitch.github.io/2016/08/07/CA-Certificate-Keytool-with-Ansible-Part2</id>
+   <content type="html">&lt;p&gt;&lt;strong&gt;&lt;em&gt;Introduction&lt;/em&gt;&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;In the previous post we examined configuring a single JBoss server with a keystore.  In this post we will expand with a full example in Ansible on setting up the following server configuration:&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;ul&gt;
+    &lt;li&gt;Server 1: Httpd, Proxy, and OpenLDAP&lt;/li&gt;
+    &lt;li&gt;Server 2: JBoss EAP 7&lt;/li&gt;
+    &lt;li&gt;Server 3: JBoss EAP 7&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;There are several ways to get the project up and running.  For purposes of this example, there is a vagrant file, and simple playbook to install and setup the ansible provisioner from vagrant.  This can be downloaded from &lt;a href=&quot;here&quot;&gt;file&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;The vagrant up command will start the 3 servers install and start the services on the servers.&lt;/p&gt;
+
+&lt;p&gt;Once the servers are up executing the following ansible playbook will configure, the host services.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nn&quot;&gt;---&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;# The local server will act as our CA server&lt;/span&gt;
+&lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;hosts&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;localhost&lt;/span&gt;
+  &lt;span class=&quot;s&quot;&gt;vars&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;servers&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;www&lt;/span&gt;
+    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;app1&lt;/span&gt;
+    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;app2&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;cert_dir&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;./exampleca&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;passwd&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;changeit&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;ca_base&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;/DC=com/DC=example/&quot;&lt;/span&gt;
+  &lt;span class=&quot;s&quot;&gt;tasks&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+
+  &lt;span class=&quot;c1&quot;&gt;# Configure the CA&lt;/span&gt;
+  &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;Setup a CA&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;ca&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; 
+    &lt;span class=&quot;s&quot;&gt;certdir=&quot;&quot;&lt;/span&gt; 
+    &lt;span class=&quot;s&quot;&gt;subj=&quot;/CN=CA/&quot;&lt;/span&gt;
+
+  &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;generate server certificates for all hosts&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;certificate&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;  
+    &lt;span class=&quot;s&quot;&gt;cadir=&quot;&quot;&lt;/span&gt; 
+    &lt;span class=&quot;s&quot;&gt;certname=&quot;.&quot;&lt;/span&gt; 
+    &lt;span class=&quot;s&quot;&gt;subj=&quot;/CN=/&quot;&lt;/span&gt; 
+    &lt;span class=&quot;s&quot;&gt;p12password=&quot;&quot;&lt;/span&gt; 
+    &lt;span class=&quot;s&quot;&gt;subjectAltNames=&quot;DNS:,DNS:.&quot;&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;with_items&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;&lt;/span&gt;
+
+    
+  &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;Create a java server trustore and trust the server hosts&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;keytool&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; 
+    &lt;span class=&quot;s&quot;&gt;cadir=&quot;&quot;&lt;/span&gt; 
+    &lt;span class=&quot;s&quot;&gt;certname=&quot;.&quot;&lt;/span&gt; 
+    &lt;span class=&quot;s&quot;&gt;store_password=&#39;&#39;&lt;/span&gt; 
+    &lt;span class=&quot;s&quot;&gt;hosts_to_trust=&quot;.&quot;&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;with_items&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;&lt;/span&gt;
+
+  &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;Create a java server keystore&lt;/span&gt; 
+    &lt;span class=&quot;s&quot;&gt;keytool&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; 
+    &lt;span class=&quot;s&quot;&gt;cadir=&quot;&quot;&lt;/span&gt; 
+    &lt;span class=&quot;s&quot;&gt;certname=&quot;.&quot;&lt;/span&gt; 
+    &lt;span class=&quot;s&quot;&gt;store_password=&#39;&#39;&lt;/span&gt;  
+    &lt;span class=&quot;s&quot;&gt;certtype=&quot;keystore&quot;&lt;/span&gt; 
+    &lt;span class=&quot;s&quot;&gt;src_password=&#39;&#39;&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;with_items&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;&lt;/span&gt;
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>OpenSSL CA, Certificate and Keytool Management with Ansible</title>
+   <link href="http://zer0glitch.github.io/2016/07/24/CA-Certificate-Keytool-with-Ansible"/>
+   <updated>2016-07-24T00:00:00-04:00</updated>
+   <id>http://zer0glitch.github.io/2016/07/24/CA-Certificate-Keytool-with-Ansible</id>
+   <content type="html">&lt;p&gt;&lt;strong&gt;&lt;em&gt;Introduction&lt;/em&gt;&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Ansible is a fast growing product for provisioning of compute instances, and software on the computer instances.  A simple way way of managing certificates and users is through the use of System Integrity Management Platform (SIMP).  Unfortunately, SIMP uses puppet to manage certificates and servers, and this is a large commitment to manage a cluster for development purposes.&lt;/p&gt;
+
+&lt;p&gt;The OpenSSL module can solve the issue of certificate management in Ansible.  The module, or extension of Ansible, allows for complete CA, Certificate, and Keystore management.  The system will work existing CAs or create a custom CA for internal development.&lt;/p&gt;
+
+&lt;p&gt;Ansible-OpenSSL will create certificates that are compatible with Apache httpd, Apache Tomcat, Jboss, IIS, etc.  This includes server and client certificates for accessing the system.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;&lt;em&gt;Installing the OpenSSL Module&lt;/em&gt;&lt;/strong&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;git clone git@github.com:rclayton-the-terrible/Ansible-OpenSSL.git
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Follow the installation instructions from the github &lt;a href=&quot;https://github.com/rclayton-the-terrible/Ansible-OpenSSL&quot;&gt;project&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;&lt;em&gt;Creating a CA&lt;/em&gt;&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;The essential of certificate management is the Certificate Authority.  The Certificate Authority is responsible for being the master trust for a certificate chain.  As part of this responsibility it will sign the client and server certificate requests.&lt;/p&gt;
+
+&lt;p&gt;For our purproses we will create a CA if you already have a CA, then you can skip this step.  Our certitifcate directory will be &lt;code class=&quot;highlighter-rouge&quot;&gt;/etc/certs&lt;/code&gt; the subject &lt;code class=&quot;highlighter-rouge&quot;&gt;/DC=com/DC=example/CN=CA&lt;/code&gt;.  The format is typically the reverse of your DNS name.  To maintain uniquness in the system you can add additional information to the CN if you are planning on running multiple developemnt enviornments.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;Setup a CA&lt;/span&gt;
+  &lt;span class=&quot;s&quot;&gt;ca&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;certdir=&quot;/etc/certs&quot; subj=&quot;/DC=com/DC=example/CN=CA/&quot;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;You should now have a basic structure for your CA created under /etc/certs.  There are many suplimental files and directories that are created as part of this process, so do not delete from this directory.  It is safe to remove files in the server, keystores, client, and trustore directories, but not the directories themselves.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;&lt;em&gt;Creating a server certificate&lt;/em&gt;&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;After setting up our CA, we will now use the certificate module to create our server certificate to secure a web server.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;Create a Server Cert&lt;/span&gt;
+  &lt;span class=&quot;s&quot;&gt;certificate&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;cadir=&quot;/etc/certs&quot; certname=&quot;www.example.com&quot; subj=&quot;/DC=com/DC=example/CN=www/&quot; p12password=&quot;changeit&quot; subjectAltNames=&quot;DNS:client,DNS:www.example.com,IP:192.168.2.2&quot;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;The files created for the certificate are stored in &lt;code class=&quot;highlighter-rouge&quot;&gt;/etc/certs/server/www.example.com&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;The task will create the following files:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;openssl.cnf - The definition of how the certificate request is generated
+test.openampere.com.req.pem - The certificate request to be signed by the CA
+test.openampere.com.cert.pem.pub - The signed certificate file
+test.openampere.com.key.pem - The certificates key file
+test.openampere.com.keycert.pem - The certificate and key file in one file
+test.openampere.com.keycert.p12 - The PKCS12 file used to import into IIS or a java keystore
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;The next step is to install the certificate on the server of choice.  In our case, we are using the JBoss EAP Server as our web application server.  To accomplish this we first must create a truststore for the server to read.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;&lt;em&gt;Creating a truststore&lt;/em&gt;&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;By default the truststore will contain our default CA, and it should trust the itself for communications that are protected by client certificates.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;Create a java server trustore and trust the server hosts&lt;/span&gt;
+  &lt;span class=&quot;s&quot;&gt;keytool&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;cadir=&quot;/etc/certs&quot; certname=&quot;www.example.com&quot; store_password=&#39;changeit&#39; hosts_to_trust=&quot;www.example.com&quot;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;The result truststore is stored in &lt;code class=&quot;highlighter-rouge&quot;&gt;/etc/certs/truststore&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;The following file will be created:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;s&quot;&gt;www.example.com.trust.jks&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;&lt;em&gt;Creating a keystore&lt;/em&gt;&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;The keystore will store the server certificate key for Jboss.  You must use the keystore util to create the keystore used by jboss.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;s&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;Create a java server keystore&lt;/span&gt; 
+  &lt;span class=&quot;s&quot;&gt;keytool&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;cadir=&quot;/etc/certs&quot; certname=&quot;www.example.com&quot; store_password=&#39;changeit&#39;  certtype=&quot;keystore&quot; src_password=&#39;changeit&#39;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;This will creating the following files:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;/etc/certs/keystores/www.example.com.keystore.jks
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;The foundation is now set for a simple example of securing a single server.  The certificates generated will secure several different types of servers.&lt;/p&gt;
+
+&lt;p&gt;Part Two of this article will examine a certificate system.  &lt;a href=&quot;CA-Certificate-Keytool-with-Ansible-Part2&quot;&gt;Part 2&lt;/a&gt;&lt;/p&gt;
+
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Packer QEMU Error</title>
+   <link href="http://zer0glitch.github.io/2016/07/12/Packer-QEMU-errors"/>
+   <updated>2016-07-12T00:00:00-04:00</updated>
+   <id>http://zer0glitch.github.io/2016/07/12/Packer-QEMU-errors</id>
+   <content type="html">&lt;p&gt;&lt;strong&gt;Issue&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Running:
+&lt;code class=&quot;highlighter-rouge&quot;&gt;
+packer build  packer-centos7.json 
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;Produces&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;centos7-base output will be in this color.
+
+Build &#39;centos7-base&#39; errored: Failed creating Qemu driver: exec: &quot;qemu-system-x86_64&quot;: executable file not found in $PATH
+
+==&amp;gt; Some builds didn&#39;t complete successfully and had errors:
+--&amp;gt; centos7-base: Failed creating Qemu driver: exec: &quot;qemu-system-x86_64&quot;: executable file not found in $PATH
+
+==&amp;gt; Builds finished but no artifacts were created.
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Fix:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ln -s /usr/libexec/qemu-kvm /usr/local/bin/qemu-system-x86_64
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Using vagrant and kvm/libvirt for clustered development environments</title>
+   <link href="http://zer0glitch.github.io/2016/07/08/Vagrant-Libvirt-Clusters"/>
+   <updated>2016-07-08T00:00:00-04:00</updated>
+   <id>http://zer0glitch.github.io/2016/07/08/Vagrant-Libvirt-Clusters</id>
+   <content type="html">&lt;h1 id=&quot;initial-setup&quot;&gt;Initial Setup&lt;/h1&gt;
+
+&lt;p&gt;&lt;strong&gt;Installation&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;http://docs.ansible.com/ansible/intro_installation.html&quot;&gt;Installing Ansible&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://galaxy.ansible.com/zer0glitch/vagrant-libvirt/&quot;&gt;Installing Ansible libvirt/kvm/Ansible&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;a href=&quot;https://github.com/zer0glitch/vagrant-cluster-example&quot;&gt;Full Example&lt;/a&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Install EPEL Repo&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h1 id=&quot;testing-the-vagrant-configuration&quot;&gt;Testing the Vagrant configuration&lt;/h1&gt;
+
+&lt;p&gt;For this test we will be using a standard base box. &lt;a href=&quot;https://atlas.hashicorp.com/centos/boxes/7/&quot;&gt;Box info&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Initialize the box&lt;/strong&gt;
+This will download and stall the basebox on the intialization from the vagrant host.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;vagrant init centos/7
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;Exam the Vagrantfile&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;I have removed most of the comments and used parameters for our example, this will allow us to have a vagrant machien running Centos7, but before we do that, we need to define a strategry for defining libvirt as the provider.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;# -*- mode: ruby -*-
+# vi: set ft=ruby :
+Vagrant.configure(2) do |config|
+  config.vm.box = &quot;centos/7&quot;
+end
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;We have 3 options of defining the libvirt provider.&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Utilize the –provider tag on the vagrant up command&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;vagrant up --provider=libvirt
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Environment variable&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;VAGRANT_DEFAULT_PROVIDER=libvirt;vagrant up
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Confiration in our Vagrantfile.  This will specify the vagrant machine will only run on libvirt.  This may or may not be something you are looking for.  A developer may not be running libvirt, and need a Virtualbox default, but in a hosted environment, this may be the best method for standing up multiple machines.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;# -*- mode: ruby -*-
+# vi: set ft=ruby :
+Vagrant.configure(2) do |config|
+  config.vm.box = &quot;centos/7&quot;
+
+  # configures the machine for 
+  config.vm.provider :libvirt do |libvirt|
+    libvirt.nested = true
+    libvirt.driver = &quot;kvm&quot;
+  end
+end
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;Starting the Vagrant box to test&lt;/strong&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;vagrant up
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;SSH to the machine and make sure everything is up&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;virsh list 
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;You should see a VM running start with the name of the directory that you started in.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;vagrant ssh
+sudo -i
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;This should give you a root prompt on your VM.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Setting up a cluster&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;First we must down the VM by running&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;vagrant halt
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Since Vagrant is based on ruby we can run a ruby loop to create multiple VMs inside of our Vagrant file.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;# -*- mode: ruby -*-
+# vi: set ft=ruby :
+Vagrant.configure(2) do |config|
+
+  # We are going to create 3 VMs
+  (1..3).each do |i|
+
+    # set a name for the VM
+    vm_name=&quot;Server#{i}&quot;
+
+    config.vm.define vm_name do |node|
+      node.vm.box = &quot;centos/7&quot;
+    end
+  end
+
+  # configures the machine for 
+  config.vm.provider :libvirt do |libvirt|
+    libvirt.nested = true
+    libvirt.driver = &quot;kvm&quot;
+  end
+end
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;Starting the Vagrant box to test&lt;/strong&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;vagrant up
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;Check the VM&lt;/strong&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;virsh list
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;You should see 3 servers running like the following:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;101   test_Server3                  running
+102   test_Server1                  running
+103   test_Server2                  running
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Running a &lt;code class=&quot;highlighter-rouge&quot;&gt;vagrant status&lt;/code&gt; will also give you information about the running VMs.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;[root@localhost test]# vagrant status
+Current machine states:
+
+Server1                  running (libvirt)
+Server2                  running (libvirt)
+Server3                  running (libvirt)
+
+This environment represents multiple VMs. The VMs are all listed
+above with their current state. For more information about a specific
+VM, run `vagrant status NAME`.
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Now if we try to access the machines with a &lt;code class=&quot;highlighter-rouge&quot;&gt;vagrant ssh&lt;/code&gt; we will get the following error:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;This command requires a specific VM name to target in a multi-VM environment.
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;We can access the VMs with the following, and see the hostname of the server:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;[root@localhost test]# vagrant ssh Server1
+[vagrant@localhost ~]$ hostname
+localhost.localdomain
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Let us give the machine a better hostname so we can identify the machine better.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; -*- mode: ruby -*-
+# vi: set ft=ruby :
+Vagrant.configure(2) do |config|
+
+  # We are going to create 3 VMs
+  (1..3).each do |i|
+
+    # set a name for the VM
+    vm_name=&quot;Server#{i}&quot;
+
+    config.vm.define vm_name do |node|
+      node.vm.box = &quot;centos/7&quot;
+      node.vm.hostname = vm_name
+    end
+  end
+
+  # configures the machine for
+  config.vm.provider :libvirt do |libvirt|
+    libvirt.nested = true
+    libvirt.driver = &quot;kvm&quot;
+  end
+end
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Check the hostname of Server1&lt;/p&gt;
+
+&lt;p&gt;Running vagrant ssh with the -c option will allow us to run a command &lt;code class=&quot;highlighter-rouge&quot;&gt;vagrant ssh Server1 -c hostname&lt;/code&gt;, and we should see a result like this.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;server1
+Connection to 192.168.121.208 closed.
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Now we can work on a more complex example.  We are going to create a single database server and two web servers.  Our configuration will be as follows:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Two Web Servers:
+- httpd
+- postgres client
+
+One Database Server
+- postgres server/client
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;To accomplish this we are going to have multipe configuration sections. Our result Vagrant file looks like this:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;# -*- mode: ruby -*-
+# vi: set ft=ruby :
+Vagrant.configure(2) do |config|
+
+
+  # Configure the Single Database server
+  config.vm.define &quot;database&quot; do |node|
+    node.vm.box = &quot;centos/7&quot;
+    node.vm.hostname = &quot;database&quot;
+  end
+
+  # We are going to create 3 VMs
+  (1..2).each do |i|
+
+    # set a name for the VM
+    vm_name=&quot;web#{i}&quot;
+
+    config.vm.define vm_name do |node|
+      node.vm.box = &quot;centos/7&quot;
+      node.vm.hostname = vm_name
+    end
+  end
+
+  # configures the machine for
+  config.vm.provider :libvirt do |libvirt|
+    libvirt.nested = true
+    libvirt.driver = &quot;kvm&quot;
+  end
+end
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;So we have made our life easier.  We have started with a preconfigured VM, so no waiting for the installation to complete, we have the VMs stood up in the matter of mintunes and now we are ready to provision the machine.  This is an additional power of Vagrant.  We can automaticall provision and configure our machines.  We will be using the ansible provisioner.  To conigure the servers with the roles they need.&lt;/p&gt;
+
+&lt;p&gt;Sample playbooks can be downloaded from &lt;a href=&quot;https://github.com/zer0glitch/vagrant-cluster-example&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;The vagrant file will be modified to do the following things:
+- Add provisioning sections for the servers
+- create server groups&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;New Vagrant file&lt;/strong&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;# -*- mode: ruby -*-
+# vi: set ft=ruby :
+Vagrant.configure(2) do |config|
+
+  # The web servers
+  web_servers = []
+
+  # Configure the Single Database server
+  config.vm.define &quot;database&quot; do |node|
+    node.vm.box = &quot;centos/7&quot;
+    node.vm.hostname = &quot;database&quot;
+  end
+
+  # We are going to create 3 VMs
+  (1..2).each do |i|
+
+    # set a name for the VM
+    vm_name=&quot;web#{i}&quot;
+
+    # add the server to web server list
+    web_servers.push(vm_name)
+
+    config.vm.define vm_name do |node|
+      node.vm.box = &quot;centos/7&quot;
+      node.vm.hostname = vm_name
+    end
+  end
+
+  config.vm.provision :ansible do |ansible|
+    ansible.groups = {
+      &quot;database&quot; =&amp;gt; [&quot;database&quot;],
+      &quot;webservers&quot; =&amp;gt; web_servers,
+    }
+    ansible.playbook = &quot;site.yml&quot;
+    ansible.verbose = true
+    ansible.sudo = true
+    ansible.limit = &quot;all&quot;
+  end
+
+
+  # configures the machine for 
+  config.vm.provider :libvirt do |libvirt|
+    libvirt.nested = true
+    libvirt.driver = &quot;kvm&quot;
+  end
+
+end
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;database.yml&lt;/strong&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;---
+- hosts: database
+  tasks:
+
+  - yum: name=postgresql-server state=installed
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;web.yml&lt;/strong&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;---
+- hosts: webservers
+  tasks:
+
+  - yum: name=postgresql state=installed
+  - yum: name=httpd state=installed
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h1 id=&quot;potential-errors&quot;&gt;Potential Errors:&lt;/h1&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;An error occurred while executing multiple actions in parallel.
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;To workaround this issue, bring the boxes with the following command:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;vagrant up --no-parallel
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Using Selenium and Ghostdriver as an Ansible Module</title>
+   <link href="http://zer0glitch.github.io/2016/04/08/Selenium-Ansible-Module-GhostJS"/>
+   <updated>2016-04-08T00:00:00-04:00</updated>
+   <id>http://zer0glitch.github.io/2016/04/08/Selenium-Ansible-Module-GhostJS</id>
+   <content type="html">&lt;p&gt;Ansible is farily flexable and extensible when for automation tool that can be extended through the use of custom modules.  This post will walk through the steps of using Selenium Web Driver scripts generated through the Mozilla plugin, to modify that into an ansible module, to do a web based configuration.&lt;/p&gt;
+
+&lt;p&gt;This project will have all code available in the example repoistory on github.  Here are the requirements for getting started:&lt;/p&gt;
+
+&lt;h1 id=&quot;initial-setup&quot;&gt;Initial Setup&lt;/h1&gt;
+
+&lt;p&gt;&lt;strong&gt;Downloads&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;http://docs.ansible.com/ansible/intro_installation.html&quot;&gt;Installing Ansible&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://addons.mozilla.org/en-US/firefox/addon/selenium-ide/&quot;&gt;Installing Selenium Firefox Plugin&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;a href=&quot;http://phantomjs.org/download.html&quot;&gt;Installing PhantomJS&lt;/a&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Install EPEL Repo&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Install the support files&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;yum install sshpass python-pip pycrypto -y
+pip install ansible
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Selenium Install&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;pip install selenium
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Installing PhantomJS&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;wget -P /tmp https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2
+cd /tmp
+bunzip2 phantomjs-2.1.1-linux-x86_64.tar.bz2
+tar xvf phantomjs-2.1.1-linux-x86_64.tar
+cp phantomjs-2.1.1-linux-x86_64/bin/phantomjs /usr/local/bin
+chmod 755 /usr/local/bin/phantomjs
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h1 id=&quot;generating-your-selenium-script&quot;&gt;Generating your Selenium Script&lt;/h1&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Open Firefox and Launch the Selenium IDE&lt;/li&gt;
+  &lt;li&gt;Click the record button&lt;/li&gt;
+  &lt;li&gt;goto: http://localhost/samtest/index.jsp&lt;/li&gt;
+  &lt;li&gt;Enter any value in the name field&lt;/li&gt;
+  &lt;li&gt;Click submit&lt;/li&gt;
+  &lt;li&gt;Goto file –&amp;gt; Export –&amp;gt; python2 web driver&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The defautl script will be setup to run an open instance of Firefox.  Later when we modify the script will change it to use PhantomJS, so this can be integrated into a CICD process.&lt;/p&gt;
+
+&lt;h1 id=&quot;exam-the-saved-script-and-convert-to-an-ansible-module&quot;&gt;Exam the saved script and convert to an ansible module&lt;/h1&gt;
+&lt;ol&gt;
+  &lt;li&gt;Create a directory called library under your base playbooks&lt;/li&gt;
+  &lt;li&gt;Copy the generated script to the directory&lt;/li&gt;
+  &lt;li&gt;Make modifications into an ansible module&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;We add the path to&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;#!/usr/bin/python&lt;/span&gt;
+
+&lt;span class=&quot;c&quot;&gt;# -*- coding: utf-8 -*-&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;selenium&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;webdriver&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;selenium.webdriver.common.by&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;By&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;selenium.webdriver.common.keys&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Keys&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;selenium.webdriver.support.ui&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Select&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;selenium.common.exceptions&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;NoSuchElementException&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;selenium.common.exceptions&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;NoAlertPresentException&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;unittest&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;re&lt;/span&gt;
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Add Ansible Inport modules&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;# Add Ansible Inport modules
+from ansible.module_utils.basic import *
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Change the Example module from a unit test a standard class&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;#class ExampleModule(unittest.TestCase):
+class ExampleModule():
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Change the init to add the parameters we need and intiialize object variables&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    def __init__(self, server, cert, certkey, certpass, creates):
+        self.server = server
+        self.creates = creates
+        self.cert = cert
+        self.certkey = certkey
+        self.certpass = certpass
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;ul&gt;
+  &lt;li&gt;make the setup of our driver part of the init for the object&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;#    def setUp(self):
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Comment out the web driver for firefox and add the driver for PhantomJS&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;        #self.driver = webdriver.Firefox()
+        self.driver = webdriver.PhantomJS(executable_path=&quot;/usr/local/bin/phantomjs&quot;)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;The arguments below will allow you to connect to PKI proected or self generated certificate server&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;		#,service_args=[&#39;--ignore-ssl-errors=yes&#39;,
+                #&#39;--ssl-client-certificate-file=&#39; + self.cert, 
+                #&#39;--ssl-client-key-file=&#39; + self.certkey,
+                #&#39;--ssl-client-key-passphrase=&#39; + self.certpass])
+
+        self.driver.set_window_size(1120, 550)
+        self.driver.implicitly_wait(30)
+        self.base_url = &quot;https://&quot; + self.server
+        self.verificationErrors = []
+        self.accept_next_alert = True
+    
+    def config_service(self):
+        changed = True
+        success = True
+        errors = []
+        changes = []
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;We add logic to not run if the file we have created already exists&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;        if not os.path.exists(self.creates):
+            try:
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;ul&gt;
+  &lt;li&gt;The section below is going to be used for the actual interaction, you need to replace specifics with generics where necessary&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;                driver = self.driver
+                driver.get(self.base_url + &quot;/example_module/web/&quot;)
+                driver.find_element_by_id(&quot;password&quot;).clear()
+                driver.find_element_by_id(&quot;password&quot;).send_keys(&quot;example_module&quot;)
+                driver.find_element_by_id(&quot;username&quot;).clear()
+                driver.find_element_by_id(&quot;username&quot;).send_keys(&quot;admin&quot;)
+                driver.find_element_by_xpath(&quot;//button[@type=&#39;submit&#39;]&quot;).click()
+                driver.find_element_by_link_text(&quot;Add stores&quot;).click()
+                #driver.find_element_by_css_selector(&quot;#id5 &amp;gt; ul &amp;gt; li &amp;gt; div &amp;gt; a &amp;gt; span&quot;).click()
+                driver.find_element_by_xpath(&quot;//form/ul/li/div/a/span&quot;).click()
+                driver.find_element_by_name(&quot;parametersPanel:parameters:2:parameterPanel:border:paramValue&quot;).clear()
+                driver.find_element_by_name(&quot;parametersPanel:parameters:2:parameterPanel:border:paramValue&quot;).send_keys(&quot;admin&quot;)
+                driver.find_element_by_name(&quot;parametersPanel:parameters:3:parameterPanel:border:paramValue&quot;).clear()
+                driver.find_element_by_name(&quot;parametersPanel:parameters:3:parameterPanel:border:paramValue&quot;).send_keys(&quot;example_module&quot;)
+                driver.find_element_by_name(&quot;dataStoreNamePanel:border:paramValue&quot;).clear()
+                driver.find_element_by_name(&quot;dataStoreNamePanel:border:paramValue&quot;).send_keys(&quot;tcri_ais_so&quot;)
+                driver.find_element_by_name(&quot;parametersPanel:parameters:0:parameterPanel:border:paramValue&quot;).clear()
+                driver.find_element_by_name(&quot;parametersPanel:parameters:0:parameterPanel:border:paramValue&quot;).send_keys(&quot;tcri&quot;)
+                driver.find_element_by_name(&quot;parametersPanel:parameters:1:parameterPanel:border:paramValue&quot;).clear()
+                driver.find_element_by_name(&quot;parametersPanel:parameters:1:parameterPanel:border:paramValue&quot;).send_keys(&quot;zoo1,zoo2,zoo3&quot;)
+                driver.find_element_by_name(&quot;parametersPanel:parameters:2:parameterPanel:border:paramValue&quot;).clear()
+                driver.find_element_by_name(&quot;parametersPanel:parameters:2:parameterPanel:border:paramValue&quot;).send_keys(&quot;tcri_rw&quot;)
+                driver.find_element_by_name(&quot;parametersPanel:parameters:3:parameterPanel:border:paramValue&quot;).clear()
+                driver.find_element_by_name(&quot;parametersPanel:parameters:3:parameterPanel:border:paramValue&quot;).send_keys(&quot;spawarinstall&quot;)
+                driver.find_element_by_name(&quot;parametersPanel:parameters:4:parameterPanel:border:paramValue&quot;).clear()
+                driver.find_element_by_name(&quot;parametersPanel:parameters:4:parameterPanel:border:paramValue&quot;).send_keys(&quot;geomesa&quot;)
+                #driver.find_element_by_id(&quot;id9&quot;).click()
+                driver.find_element_by_link_text(&quot;Save&quot;).click()
+                driver.find_element_by_xpath(&quot;//span/a/span&quot;).click()
+                driver.find_element_by_id(&quot;minX&quot;).clear()
+                driver.find_element_by_id(&quot;minX&quot;).send_keys(&quot;-180&quot;)
+                driver.find_element_by_id(&quot;minY&quot;).clear()
+                driver.find_element_by_id(&quot;minY&quot;).send_keys(&quot;-90&quot;)
+                driver.find_element_by_id(&quot;maxX&quot;).clear()
+                driver.find_element_by_id(&quot;maxX&quot;).send_keys(&quot;180&quot;)
+                driver.find_element_by_id(&quot;maxY&quot;).clear()
+                driver.find_element_by_id(&quot;maxY&quot;).send_keys(&quot;90&quot;)
+                driver.find_element_by_name(&quot;tabs:panel:theList:0:content:referencingForm:latLonBoundingBox:minX&quot;).clear()
+                driver.find_element_by_name(&quot;tabs:panel:theList:0:content:referencingForm:latLonBoundingBox:minX&quot;).send_keys(&quot;-180&quot;)
+                driver.find_element_by_name(&quot;tabs:panel:theList:0:content:referencingForm:latLonBoundingBox:minY&quot;).clear()
+                driver.find_element_by_name(&quot;tabs:panel:theList:0:content:referencingForm:latLonBoundingBox:minY&quot;).send_keys(&quot;-90&quot;)
+                driver.find_element_by_name(&quot;tabs:panel:theList:0:content:referencingForm:latLonBoundingBox:maxX&quot;).clear()
+                driver.find_element_by_name(&quot;tabs:panel:theList:0:content:referencingForm:latLonBoundingBox:maxX&quot;).send_keys(&quot;180&quot;)
+                driver.find_element_by_name(&quot;tabs:panel:theList:0:content:referencingForm:latLonBoundingBox:maxY&quot;).clear()
+                driver.find_element_by_name(&quot;tabs:panel:theList:0:content:referencingForm:latLonBoundingBox:maxY&quot;).send_keys(&quot;90&quot;)
+                driver.find_element_by_link_text(&quot;Save&quot;).click()
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Add a changed message here.  It is possible to add mutliple messages to display back in the ansible script&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;                changes.append(&quot;Added ais_oth_so layer&quot;)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;We will catch exceptions here and add error messages&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;            except Exception as e:
+		# Set success to false for ansible notification
+                success = False
+		# Set changed to false for ansible notification
+                changed = False
+		# append the error stack
+                errors.append(&quot;ERROR: ------------ &quot; + str(e))
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;if there are no errors create the creates dir&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;        if len(errors) == 0 and len(self.creates) != 0:
+            if os.path.exists(self.creates):
+                os.utime(self.creates, None)
+            else:
+                open(self.creates, &#39;a&#39;).close()
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;return back a new dictionary, ansible will use this as part of its return&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;        return dict(success=success, changed=changed, changes=changes, errors=errors, msg=&quot;, &quot;.join(errors))
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;It is always import to close down the phatomjs browser, just because you don’t see it, doesn’t meant it isn’t running&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    def tearDown(self):
+        self.driver.quit()
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Create our own main method&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;def main():
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;ul&gt;
+  &lt;li&gt;this is commented out for testing purporses.  If you want to test outside of ansible then uncomment this ling and comemnt the rest of the main method&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    #example_module = ExampleModule(&quot;172.26.14.35:8443&quot;, &quot;./c3test_u_fouo.crt.pem&quot;, &quot;./c3test_u_fouo.key.pem&quot;, &quot;pass&quot;, &quot;/tmp/geosotest&quot;)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;initialize the return value, by default we are goign to say everythign worked ok&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    returnVal = dict(succes=True)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;We are defining each of the arguments that will be passed from the playbook here&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    BASE_MODULE_ARGS = dict(
+        server = dict(required=True),
+        creates = dict(default=&quot;&quot;),
+        cert = dict(required=True),
+        certkey = dict(required=True),
+        certpass = dict(required=True)
+    )
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;ul&gt;
+  &lt;li&gt;Define the module we will be calling here&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    module = AnsibleModule(
+        argument_spec= BASE_MODULE_ARGS,
+        supports_check_mode=True
+    )
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;We are now creating an instance of the python object, using the parameters that are pulled from above&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    example_module = ExampleModule(
+        module.params[&quot;server&quot;],
+        module.params[&quot;cert&quot;],
+        module.params[&quot;certkey&quot;],
+        module.params[&quot;certpass&quot;],
+        module.params[&quot;creates&quot;]
+    )
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;try to call our test method, you can also add if statements based upon parameters here&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
+    try:
+        returnVal = example_module.test_geo_config()
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;ul&gt;
+  &lt;li&gt;if there is an exception in the method exit the module with the error&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    except Exception as e:
+        module.fail_json(msg=str(e))
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;ul&gt;
+  &lt;li&gt;make sure the browser is closed&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    finally:
+        example_module.tearDown()
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;ul&gt;
+  &lt;li&gt;return with success if everything changed ok, otherwise exit with the error message&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    if (returnVal[&#39;changed&#39;] == True):
+        module.exit_json(**returnVal)
+    else:
+        module.fail_json(msg=returnVal[&#39;msg&#39;])
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;ul&gt;
+  &lt;li&gt;try to call our test method, you can also add if statements based upon parameters here&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;# this is magic, see lib/ansible/module_common.py
+# #&amp;lt;&amp;lt;INCLUDE_ANSIBLE_MODULE_COMMON&amp;gt;&amp;gt;
+if __name__ == &quot;__main__&quot;:
+    main()
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;comment out the unit test that would have been used for testing&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;#    unittest.main()
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h1 id=&quot;actually-using-selenium-and-python-for-testing&quot;&gt;Actually Using selenium and python for testing&lt;/h1&gt;
+
+&lt;p&gt;In another article we will talk about automated testing instead of configuration with the same tool set&lt;/p&gt;
+
+&lt;h1 id=&quot;download-full-example&quot;&gt;Download full example&lt;/h1&gt;
+&lt;p&gt;&lt;a href=&quot;http://zer0glitch.githbu.com/zer0glitch/&quot;&gt;http://zer0glitch.githbu.com/zer0glitch/&lt;/a&gt;&lt;/p&gt;
+</content>
+ </entry>
+ 
+ 
+</feed>
