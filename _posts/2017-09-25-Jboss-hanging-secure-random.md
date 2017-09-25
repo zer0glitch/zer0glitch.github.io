@@ -1,7 +1,7 @@
 ---
 layout: post
 section-type: post
-category: life
+category: tech
 tags: [ 'jboss,haveged' ]
 title: "Jboss Hanging on Start-up"
 description: Jboss Hanging on Start-up
